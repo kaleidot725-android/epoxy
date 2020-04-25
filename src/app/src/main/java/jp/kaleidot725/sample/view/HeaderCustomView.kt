@@ -1,4 +1,4 @@
-package jp.kaleidot725.sample
+package jp.kaleidot725.sample.view
 
 import android.content.Context
 import android.util.AttributeSet
@@ -27,6 +27,11 @@ class HeaderCustomView : LinearLayout {
 
     @TextProp
     fun setTitle(text: CharSequence?) {
+        titleView.text = text
+    }
+
+    @TextProp
+    fun setDescription(text: CharSequence?) {
         titleView.text = text
     }
 }

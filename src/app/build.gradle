@@ -2,11 +2,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'com.jakewharton.butterknife'
-
-kapt {
-    correctErrorTypes = true
-}
 
 android {
     compileSdkVersion 29
@@ -46,5 +41,9 @@ dependencies {
 
     def epoxy_version = "3.9.0"
     implementation "com.airbnb.android:epoxy:$epoxy_version"
+    implementation "com.airbnb.android:epoxy-databinding:$epoxy_version"
     kapt "com.airbnb.android:epoxy-processor:$epoxy_version"
+
+    def recycler_version = "1.1.0"
+    implementation "androidx.recyclerview:recyclerview:$recycler_version"
 }
