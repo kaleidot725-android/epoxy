@@ -10,7 +10,8 @@ import com.airbnb.epoxy.TextProp
 
 @ModelView(autoLayout = ModelView.Size.MATCH_WIDTH_WRAP_HEIGHT)
 class HeaderCustomView : LinearLayout {
-    val titleView: TextView
+    private val titleView: TextView
+    private val descriptionView: TextView
 
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
@@ -23,6 +24,9 @@ class HeaderCustomView : LinearLayout {
     init {
         titleView = TextView(context, null)
         this.addView(titleView)
+
+        descriptionView = TextView(context, null)
+        this.addView(descriptionView)
     }
 
     @TextProp
@@ -32,7 +36,7 @@ class HeaderCustomView : LinearLayout {
 
     @TextProp
     fun setDescription(text: CharSequence?) {
-        titleView.text = text
+        descriptionView.text = text
     }
 }
 
