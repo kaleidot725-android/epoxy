@@ -1,17 +1,24 @@
 package jp.kaleidot725.sample.view
 
+import android.view.View
 import com.airbnb.epoxy.Typed2EpoxyController
 import jp.kaleidot725.sample.headerDataBindingLayout
 
-class HeaderDatabindingViewController : Typed2EpoxyController<List<String>, Boolean>() {
+class HeaderDatabindingViewController(
+    private val selectListener: SelectListener
+) : Typed2EpoxyController<List<String>, Boolean>() {
 
     override fun buildModels(names: List<String>, loadingMore: Boolean) {
-        names.forEach {
+        names.forEach { item ->
             headerDataBindingLayout {
-                id("header")
-                title("My name is ")
-                description(it)
+                id("Content")
+                title(item)
+                onClickListener(View.OnClickListener { selectListener.onSelected(item) })
             }
         }
+    }
+
+    interface SelectListener {
+        fun onSelected(item: String)
     }
 }

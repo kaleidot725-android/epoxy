@@ -1,16 +1,23 @@
 package jp.kaleidot725.sample.view
 
+import android.view.View
 import com.airbnb.epoxy.Typed2EpoxyController
 
-class HeaderCustomViewController : Typed2EpoxyController<List<String>, Boolean>() {
+class HeaderCustomViewController(
+    private val selectListener: SelectListener
+) : Typed2EpoxyController<List<String>, Boolean>() {
 
     override fun buildModels(names: List<String>, loadingMore: Boolean) {
-        names.forEach {
+        names.forEach { item ->
             headerCustomView{
-                id("header")
-                title("My Name is ")
-                description(it)
+                id("Content")
+                title(item)
+                onClickListener(View.OnClickListener { selectListener.onSelected(item) })
             }
         }
+    }
+
+    interface SelectListener {
+        fun onSelected(item: String)
     }
 }

@@ -3,30 +3,35 @@ package jp.kaleidot725.sample.view
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
+import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.airbnb.epoxy.CallbackProp
 import com.airbnb.epoxy.ModelView
 import com.airbnb.epoxy.TextProp
 
 @ModelView(autoLayout = ModelView.Size.MATCH_WIDTH_WRAP_HEIGHT)
 class HeaderCustomView : LinearLayout {
-    private val titleView: TextView
-    private val descriptionView: TextView
+    private lateinit var titleView: TextView
+    private lateinit var buttonView: Button
 
-    constructor(context: Context) : super(context)
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
-    constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(
-        context,
-        attrs,
-        defStyle
-    )
+    constructor(context: Context) : super(context) {
+        init(context, null)
+    }
 
-    init {
-        titleView = TextView(context, null)
+    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
+        init(context, attrs)
+    }
+
+    private fun init(context: Context, attrs: AttributeSet?) {
+        titleView = TextView(context, attrs)
+        titleView.width = 500
+        titleView.textSize = 32f
         this.addView(titleView)
 
-        descriptionView = TextView(context, null)
-        this.addView(descriptionView)
+        buttonView = Button(context, attrs)
+        buttonView.text = "ACTION"
+        this.addView(buttonView)
     }
 
     @TextProp
@@ -34,9 +39,9 @@ class HeaderCustomView : LinearLayout {
         titleView.text = text
     }
 
-    @TextProp
-    fun setDescription(text: CharSequence?) {
-        descriptionView.text = text
+    @CallbackProp
+    fun onClickListener(listener: View.OnClickListener?) {
+        buttonView.setOnClickListener(listener)
     }
 }
 
