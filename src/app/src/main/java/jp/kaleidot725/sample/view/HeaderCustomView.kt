@@ -24,13 +24,16 @@ class HeaderCustomView : LinearLayout {
     }
 
     private fun init(context: Context, attrs: AttributeSet?) {
-        titleView = TextView(context, attrs)
-        titleView.width = 500
-        titleView.textSize = 32f
-        this.addView(titleView)
+        titleView = TextView(context, attrs).apply {
+            this.width = 500
+            this.textSize = 32f
+        }
 
-        buttonView = Button(context, attrs)
-        buttonView.text = "ACTION"
+        buttonView = Button(context, attrs).apply {
+            buttonView.text = "ACTION"
+        }
+
+        this.addView(titleView)
         this.addView(buttonView)
     }
 

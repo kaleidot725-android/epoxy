@@ -18,7 +18,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-
         val headerDatabindingViewController = HeaderDatabindingViewController(object :
             HeaderDatabindingViewController.SelectListener {
             override fun onSelected(item: String) {
@@ -33,22 +32,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        headerDatabindingViewController.setData(itemList, false)
-
-        val headerCustomViewController =
-            HeaderCustomViewController(object : HeaderCustomViewController.SelectListener {
-                override fun onSelected(item: String) {
-                    Toast.makeText(applicationContext, item, Toast.LENGTH_SHORT).show()
-                }
-            })
-
-        recycler_view2.apply {
-            this.adapter = headerCustomViewController.adapter
-            this.layoutManager = LinearLayoutManager(applicationContext).apply {
-                orientation = LinearLayoutManager.VERTICAL
-            }
-        }
-
-        headerCustomViewController.setData(itemList, false)
+        headerDatabindingViewController.setData(itemList, true)
     }
 }
