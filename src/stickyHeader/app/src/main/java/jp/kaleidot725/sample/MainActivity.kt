@@ -3,9 +3,9 @@ package jp.kaleidot725.sample
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.airbnb.epoxy.stickyheader.StickyHeaderLinearLayoutManager
+import jp.kaleidot725.sample.controller.Content
+import jp.kaleidot725.sample.controller.Header
 import jp.kaleidot725.sample.controller.StickyHeaderController
-import jp.kaleidot725.sample.model.Content
-import jp.kaleidot725.sample.model.Header
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity() {
 
         val stickyHeaderController = StickyHeaderController()
         epoxy_recycler_view.adapter = stickyHeaderController.adapter
-        epoxy_recycler_view.layoutManager = StickyHeaderLinearLayoutManager(applicationContext)
+//        epoxy_recycler_view.layoutManager = StickyHeaderLinearLayoutManager(applicationContext)
         stickyHeaderController.setData(createHeaders(10), createContents(100))
     }
 

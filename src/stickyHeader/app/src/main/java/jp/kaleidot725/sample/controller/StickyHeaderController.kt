@@ -4,8 +4,9 @@ import com.airbnb.epoxy.Typed2EpoxyController
 import jp.kaleidot725.sample.HeaderLayoutBindingModel_
 import jp.kaleidot725.sample.contentLayout
 import jp.kaleidot725.sample.headerLayout
-import jp.kaleidot725.sample.model.Content
-import jp.kaleidot725.sample.model.Header
+
+data class Content(val uuid: String, val value: String)
+data class Header(val uuid: String,val value: String)
 
 class StickyHeaderController : Typed2EpoxyController<List<Header>, List<Content>>() {
     override fun buildModels(headers: List<Header>, contents: List<Content>) {

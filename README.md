@@ -36,8 +36,8 @@ dependencies {
 Epoxy を利用するには EpoxyModel とEpoxyController を作成する必要があります。これらの EpoxyModel と EpoxyController ですが次のような役割になっています。
 
 | 名称| 説明 |
-| ------- | ------- | 
-| EpoxyModel  | Epoxyが生成するクラスで RecylerView に表示する View を定義する。また Epoxy から View を操作するためのインタフェースを定義する。EpoxyModel は開発者が作成した CustomView や Layout ファイルから生成される。 | 
+| ------- | ------- |
+| EpoxyModel  | Epoxyが生成するクラスで RecylerView に表示する View を定義する。また Epoxy から View を操作するためのインタフェースを定義する。EpoxyModel は開発者が作成した CustomView や Layout ファイルから生成される。 |
 | EpoxyController | RecyclerView に表示する EpoxyModel を生成し、EpoxyModel に定義されたインタフェースを使って、View の操作を行う。 |
 
 ## EpoxyModel を作成する
@@ -257,8 +257,8 @@ Epoxy を利用するには EpoxyModel とEpoxyController を作成する必要�
 これら EpoxyModel と EpoxyController ですが次のような役割を担当します。
 
 | 名称| 説明 |
-| ------- | ------- | 
-| EpoxyModel  | RecylerView に表示する View を定義する。また Epoxy から View を操作するためのインタフェースを定義する。 | 
+| ------- | ------- |
+| EpoxyModel  | RecylerView に表示する View を定義する。また Epoxy から View を操作するためのインタフェースを定義する。 |
 | EpoxyController | RecyclerView に表示する EpoxyModel を生成し、EpoxyModelに定義されたインタフェースを使って、View の操作を行う。 |
 
 ## EpoxyModel を作成する
@@ -439,3 +439,261 @@ CustomView から EpoxyModel を作成するパターンでは次の実装が必
 # 参考文献
 
 - [Epoxy | GitHub](https://github.com/airbnb/epoxy)
+
+
+
+# 2020/07/12 ［Android］Epoxy が StickyHeader に対応しているらしいので試してみた
+
+# はじめに
+
+RecyclerView の Adapter の実装の部分を楽にしてくれるライブラリの Epoxy ですが、
+どうやら Sticky Header にも対応してくれているらしいです。今回は Epoxy で Sticky Header をどのような感じで利用できるのか紹介したいと思います。
+
+# 準備する
+
+Sticky Header が利用できるようになったのは [3.10.0](https://github.com/airbnb/epoxy/releases/tag/3.10.0) からみたいです。なので次の内容を build.gradle に記述して、3.10.0 以上の Epoxy を使えるようにします。
+
+[![Image from Gyazo](https://i.gyazo.com/c4e14fdb146c8dd17e8fbc3f057553a5.png)](https://gyazo.com/c4e14fdb146c8dd17e8fbc3f057553a5)
+
+```groovy
+// kapt 有効化
+apply plugin: 'kotlin-kapt' 
+
+android {
+      ︙
+    // databinding 有効化
+    dataBinding {
+        enabled = true 
+    }
+      ︙
+}
+
+dependencies {
+      ︙
+    def epoxy_version = "3.11.0"
+    implementation "com.airbnb.android:epoxy:$epoxy_version"
+    implementation "com.airbnb.android:epoxy-databinding:${epoxy_version}"
+    kapt "com.airbnb.android:epoxy-processor:$epoxy_version"
+      ︙
+}
+```
+
+# 実装する
+
+
+## EpoxyModel を作成する
+
+まずは EpoxyModel を作成していきます。今回は StickyHeader になる HeaderLayout と StickyHeader にならない ContentLayout と分けて作成していきます。
+
+**HeaderLayout**
+
+[![Image from Gyazo](https://i.gyazo.com/e52e0a0f6b50fa199f06179c4973cc79.png)](https://gyazo.com/e52e0a0f6b50fa199f06179c4973cc79)
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="title"
+            type="String" />
+    </data>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{title}"
+            android:textColor="@android:color/white"
+            android:textSize="32sp"
+            android:background="@color/colorPrimary"
+            tools:text="Sticky Header" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</layout>
+```
+
+**ContentLayout**
+
+[![Image from Gyazo](https://i.gyazo.com/24bf8d67818ab791dcfed8a459fc3e04.png)](https://gyazo.com/24bf8d67818ab791dcfed8a459fc3e04)
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="title"
+            type="String" />
+    </data>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{title}"
+            tools:text="Content" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</layout>
+```
+
+**package-info.java**
+そしてこのままだと Epoxy は　EpoxyModel を生成してくれません。ですので package-info.java を作成して Epoxy が EpoxyModel を生成してくれるようにしてやります。
+
+```java
+@EpoxyDataBindingLayouts({R.layout.content_layout, R.layout.header_layout})
+package jp.kaleidot725.sample;
+import com.airbnb.epoxy.EpoxyDataBindingLayouts;
+```
+
+## EpoxyController を作成する
+
+次に EpoxyController を作成してやります、今回は単純に先程作成した HeaderLayout と ContentLayout を交互に表示する StickyHeaderController というクラスを作成してやります。
+
+```kotlin
+data class Content(val uuid: String, val value: String)
+data class Header(val uuid: String,val value: String)
+
+class StickyHeaderController : Typed2EpoxyController<List<Header>, List<Content>>() {
+    override fun buildModels(headers: List<Header>, contents: List<Content>) {
+        headers.forEach { header ->
+            headerLayout {
+                id(header.uuid)
+                title(header.value)
+            }
+
+            contents.forEach { content ->
+                contentLayout {
+                    id(content.uuid)
+                    title(content.value)
+                }
+            }
+        }
+    }
+}
+```
+
+## EpoxyRecyclerView をセットアップする
+
+あとは EpoxyRecyclerView を定義してセットアップしてやります。
+
+**MainActivity**
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <com.airbnb.epoxy.EpoxyRecyclerView
+        android:id="@+id/epoxy_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+```
+
+```kotlin
+class MainActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        val stickyHeaderController = StickyHeaderController()
+        epoxy_recycler_view.adapter = stickyHeaderController.adapter
+        stickyHeaderController.setData(createHeaders(10), createContents(100))
+    }
+
+    private fun randomUUIDString(): String {
+        return UUID.randomUUID().toString()
+    }
+
+    private fun createHeaders(max: Long): List<Header> {
+        return (0..max).map { count -> Header(randomUUIDString(), "Header $count") }
+    }
+
+    private fun createContents(max: Long): List<Content> {
+        return (0..max).map { count -> Content(randomUUIDString(), "Content $count") }
+    }
+}
+```
+
+ここまで実装したものだと通常の Epoxy と同じで StickyHeader の動作になりません。 StickyHeader として使うには次の実装を追加してやる必要があります。
+
+<a href="https://gyazo.com/8a4a9f2a5d50779936690c6f4645cebe"><img src="https://i.gyazo.com/8a4a9f2a5d50779936690c6f4645cebe.gif" alt="Image from Gyazo" width="256"/></a>
+
+
+## StickyHeader として動作するようにする
+
+StickyHeader として動作させるには次の 2つの実装を追加してやります。
+
+1. EpoxyRecyclerView の layoutManager として StickyHeaderLinearLayoutManager をセットしてやる
+2. EpoxyRecyclerView の adpter としてセットされる EpoxyController の isStickyHeader を override してやる
+
+**EpoxyRecyclerView の layoutManager として StickyHeaderLinearLayoutManager をセットしてやる**
+
+StickyHeader を利用するにはまず RecyclerView の layoutManager に StickyHeaderLinearLayoutManager をセットしてやる必要があります。この StickyHeaderLinearLayoutManager が StickyHeader である EpoxyModel を見つけてくれるようになっていて、RecyclerView のスクロール状況に応じて StickyHeader を貼り付けてくれます。
+
+```kotlin
+class MainActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        val stickyHeaderController = StickyHeaderController()
+        epoxy_recycler_view.adapter = stickyHeaderController.adapter
+        epoxy_recycler_view.layoutManager = StickyHeaderLinearLayoutManager(applicationContext)
+        stickyHeaderController.setData(createHeaders(10), createContents(100))
+    }
+}
+```
+
+**EpoxyRecyclerView の adpter としてセットされる EpoxyController の isStickyHeader を override してやる**
+
+StickyHeaderLinearLayoutManager では EpoxyController の isStickyHeader を利用して StickyHeader を識別するような仕組みになっています。ですので isStickyHeader を override して自身が定義した EpoxyModel を StickyHeader として認識されるようにします。（isStickyHeader の引数として Position が渡されます、なので Position にある EpoxyModel のクラスを取得して、StickyHeaderとして扱いたいクラスであるか判定してやります。）
+
+```kotlin
+class StickyHeaderController : Typed2EpoxyController<List<Header>, List<Content>>() {
+        ︙
+    override fun isStickyHeader(position: Int): Boolean {
+        return adapter.getModelAtPosition(position)::class == HeaderLayoutBindingModel_::class
+    }
+}
+```
+
+この実装を加えると EpoxyModel が StickyHeader として扱われ RecyclerView に StickyHeader が表示されるようになります。
+
+<a href="https://gyazo.com/396045ac8a1da098c95ff5fe244b7109"><img src="https://i.gyazo.com/396045ac8a1da098c95ff5fe244b7109.gif" alt="Image from Gyazo" width="256"/></a>
+
+# おわりに
+
+という感じで Epoxy でも StickyHeader が使えるようになっているらしいです。使い方をまとめると次のようになりますね。
+
+- 通常の利用方法と同じで EpoxyModel と EpoxyController を実装してやる
+- RecyclerView の adapter に EpoxyController.Adapter、layoutManager に StickyHeaderLinearLayoutManager をセットしてやる
+- StickyHeaderLinearLayoutManager が StickyHeader である EpoxyModel を識別できるように EpoxyController.isStickyHeader を実装してやる。
+
+<a href="https://github.com/kaleidot725-android/epoxy"><img src="https://github-link-card.s3.ap-northeast-1.amazonaws.com/kaleidot725-android/epoxy.png" width="460px"></a>
+
+# 参考文献
+
+StickyHeader は現時点（2020/07/12）でまだドキュメントが整備されていないので、詳しく知りたい方は次のリンクを見てみると良いかなと思います。
+
+- [Epoxy | GitHub](https://github.com/airbnb/epoxy)
+- [Epoxy StickyHeader のサンプル](https://github.com/airbnb/epoxy/tree/master/kotlinsample/src/main/java/com/airbnb/epoxy/kotlinsample)
+- [Epoxy StickyHeader をサポートした時のプルリクエスト](https://github.com/airbnb/epoxy/pull/842)
