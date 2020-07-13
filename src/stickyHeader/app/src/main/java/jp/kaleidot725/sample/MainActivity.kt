@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity() {
 
         val stickyHeaderController = StickyHeaderController()
         epoxy_recycler_view.adapter = stickyHeaderController.adapter
-//        epoxy_recycler_view.layoutManager = StickyHeaderLinearLayoutManager(applicationContext)
+        epoxy_recycler_view.layoutManager = StickyHeaderLinearLayoutManager(applicationContext)
         stickyHeaderController.setData(createHeaders(10), createContents(100))
     }
 
