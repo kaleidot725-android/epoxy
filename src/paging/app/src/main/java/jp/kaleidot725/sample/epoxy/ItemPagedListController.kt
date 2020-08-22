@@ -7,8 +7,9 @@ import jp.kaleidot725.sample.data.entity.Item
 
 class ItemPagedListController : PagedListEpoxyController<Item>() {
     override fun buildItemModel(currentPosition: Int, item: Item?): EpoxyModel<*> {
+        requireNotNull(item)
         return LayoutEpoxyItemBindingModel_().apply {
-            id(item!!.id)
+            id(item.id)
             title(item.title)
         }
     }

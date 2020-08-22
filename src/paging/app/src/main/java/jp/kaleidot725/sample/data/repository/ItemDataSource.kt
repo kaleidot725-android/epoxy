@@ -4,9 +4,7 @@ import androidx.paging.PageKeyedDataSource
 import jp.kaleidot725.sample.data.entity.Item
 import jp.kaleidot725.sample.data.service.QiitaService
 
-class ItemDataSource(
-        private val service: QiitaService
-) : PageKeyedDataSource<Int, Item>() {
+class ItemDataSource(private val service: QiitaService) : PageKeyedDataSource<Int, Item>() {
     override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, Item>) {}
 
     // API呼び出しをしているので、本来であればここで例外の対処を記述する必要がありますが省略しています。
