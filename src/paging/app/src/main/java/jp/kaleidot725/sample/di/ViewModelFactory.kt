@@ -1,9 +1,18 @@
 package jp.kaleidot725.sample.di
 
-import jp.kaleidot725.sample.repository.EpoxyItemDataSourceFactory
-import jp.kaleidot725.sample.repository.EpoxyItemRepository
+import jp.kaleidot725.sample.data.repository.EpoxyItemDataSourceFactory
+import jp.kaleidot725.sample.data.service.QiitaService
 import jp.kaleidot725.sample.ui.MainViewModel
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 object ViewModelFactory {
-    val mainViewModel: MainViewModel get() = MainViewModel(EpoxyItemDataSourceFactory(EpoxyItemRepository()))
+    private val retrofit get() = Retrofit.Builder()
+            .baseUrl("https://qiita.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+    private val service = retrofit.create(QiitaService::class.java)
+
+    val mainViewModel: MainViewModel get() = MainViewModel(EpoxyItemDataSourceFactory(service))
 }

@@ -24,6 +24,15 @@ android {
         }
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
     dataBinding {
         enabled = true
     }
@@ -44,4 +53,11 @@ dependencies {
     implementation "com.airbnb.android:epoxy-databinding:${epoxy_version}"
     implementation "com.airbnb.android:epoxy-paging:${epoxy_version}"
     kapt "com.airbnb.android:epoxy-processor:$epoxy_version"
+
+    def retrofit_version ="2.9.0"
+    implementation "com.squareup.retrofit2:retrofit:${retrofit_version}"
+    implementation "com.squareup.retrofit2:converter-gson:${retrofit_version}"
+
+    def gson_version = "2.8.5"
+    implementation "com.google.code.gson:gson:${gson_version}"
 }
