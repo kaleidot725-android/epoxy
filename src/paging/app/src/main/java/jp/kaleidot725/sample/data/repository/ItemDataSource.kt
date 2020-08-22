@@ -4,7 +4,7 @@ import androidx.paging.PageKeyedDataSource
 import jp.kaleidot725.sample.data.entity.Item
 import jp.kaleidot725.sample.data.service.QiitaService
 
-class EpoxyItemDataSource(
+class ItemDataSource(
         private val service: QiitaService
 ) : PageKeyedDataSource<Int, Item>() {
     override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, Item>) {}
